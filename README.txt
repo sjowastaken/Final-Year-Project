@@ -1,6 +1,8 @@
-This document explains how to run the code and the format of the output.
+﻿This document explains how to run the code and outlines the format of the output.
 
 1. Collect HTML data: crawler.js
+
+The code runs with PhantomJS v 1.9. Compatibility with other versions is not guaranteed.
 
 Settings are in the top part of the code, lines 7 to 11:
 
@@ -19,7 +21,7 @@ phantomjs crawler.js
 
 PhantomJS will deliver errors to the stderr while processing the data. This is normal and should just be ignored.
 
-The crawler will automatically create two files: 
+The crawler will automatically create two files in the data directory: 
 - all_comments.txt, which contains all comments encountered by the crawler saved in JSON format.
 - all_html.txt, which contains the HTML of all suspicious pages for which a link was found in a comment.
 
@@ -33,19 +35,18 @@ comment is: All deceived Facebook 2015  http://sh.st/hdfRZ
 function customwl_onload_fb62bbf2e9() {
    if (typeof(jQuery) === "undefined") {
    ...
-   ...
-   ...
 
 This format is then used in the feature generation script to separate each entry from the other. 
 
 
------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 
 2. Generate feature matrix: featuregen.py
 
-Set the verbose parameter to 0 if desired. If left as 1, it will output the data index number and the feature vector for each entry in both dictionary and list form, along with the filter prediction. An example is given below:
+All python code was written in v 3.x.
 
+Set the verbose parameter to 0 if desired. If left as 1, it will output the data index number and the feature vector for each entry in both dictionary and list form, along with the filter prediction. An example is given below:
 
 1    OrderedDict([('nsuspscript', 0), ('nvideos', 0), ('niframes', 2), ('nscripts', 1), ('ncommsuspterm', 0), ('commthastxt', 26), ('ninvisible', 0), ('nhw1', 0), ('nhw100', 1), ('nsmallarea', 0), ('nposabs', 0), ('nsrcnotdom', 1), ('nhas_fb', 0), ('nowww', 1), ('lengthurl', 18), ('subdomlen', 2), ('urlhasip', 0), ('url_adv_short', 1), ('url_short', 0), ('subdomhasnum', 0), ('noccurr', 1), ('filterpred', 2)])
 url:   http://sh.st/hdfRZ
@@ -66,15 +67,21 @@ python featuregen.py > ../out/featuregen_log.txt
 Else just run:
 python featuregen.py
 
+The output can be found in the gen directory, and is a feature matrix of the form:
 
------------------------------------------------------------------------------------------------------------------
+0 0 2 1 0 26 0 0 1 0 0 1 0 1 18 2 0 1 0 0 1 2
+0 0 5 0 0 121 0 0 0 2 0 1 1 1 20 3 0 0 1 0 1 2
+0 0 7 0 0 128 1 0 0 2 0 4 2 0 44 3 0 0 0 0 1 2
+0 0 3 0 0 0 0 0 0 1 0 1 0 0 44 3 0 0 0 0 1 3
+…
+
+
+--------------------------------------------------------------------------------
 
 
 3. Run the classifier on the data: learn.py
 
-
 Again the verbose setting allows to turn on or off console output. If left on, it will output the analysis results for the training set and the feature importance list. The output is a list of entries:
-
 
 [1, '  pred:', '3', ' prob:', array([ 0. ,  0.2,  0.8])]
 [2, '  pred:', '3', ' prob:', array([ 0.,  0.,  1.])]
