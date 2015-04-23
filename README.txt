@@ -96,3 +96,4 @@ python learn.py > ../out/learn_log.txt
 Else:
 python learn.py
 
+The ouput can be found in the out directory.
